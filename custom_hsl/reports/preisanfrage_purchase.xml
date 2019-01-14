@@ -1,0 +1,112 @@
+<odoo>
+    <template id="hsl_external_layout_standard3" inherit_id="purchase.report_purchasequotation_document">
+        <xpath expr="//div[@class='page']" position="replace">
+            <div class="page">
+                <div class="oe_structure"/>
+                <div class="row">
+
+                    <h3 class="text-right" style="margin-right: 15px;">
+                        Preisanfrage
+                    </h3>
+
+                    <div class="col-xs-5">
+                        <strong>
+                            Firma:
+                        </strong>
+                        <strong t-field="o.partner_id"
+                                t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
+
+                    </div>
+                    <div class="col-xs-7">
+                        <div class="text-right">
+                            Belegnummer:
+                            <span t-field="o.name"/>
+                        </div>
+                        <div class="text-right">
+                            <br/>
+                        </div>
+
+                        <div class="text-right" >
+                            Datum:
+                            <span t-field="o.date_order"  t-options='{"widget": "date"}'/>
+                        </div>
+
+                        <div class="text-right" >
+                            <br/>
+                        </div>
+
+                        <div class="text-right">
+                            Ansprechpartner:
+                            <span t-field="o.x_user_id"/>
+                        </div>
+                        <div class="text-right">
+                            Telefon:
+                            <span t-field="o.x_user_id.phone"/>
+                        </div>
+                        <div class="text-right">
+                            Email:
+                            <span t-field="o.x_user_id.login"/>
+                        </div>
+                        <div class="text-right">
+                            Seite:
+                            <span class="page"/> / <span class="topage"/>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-left">
+                    Bitte teilen Sie uns die Preise zu den unten aufgeführten Positionen mit:
+                </p>
+
+                <table class="table table-condensed">
+                    <thead style="border: 1px solid black;">
+                        <tr class="border-black">
+                            <th>Position</th>
+                            <th>Bezeichnung</th>
+                            <th class="text-right">Menge Einheit</th>
+                        </tr>
+                    </thead>
+
+
+                    <tbody>
+                        <tr t-foreach="o.order_line" t-as="line">
+                            <td>
+                                <span t-esc="line_index+1"/>
+                            </td>
+                            <td>
+                                <span t-field="line.name"/>
+                            </td>
+
+                            <td class="text-right">
+                                <span t-field="line.product_qty"/>
+                                <span t-field="line.product_uom.name" groups="product.group_uom"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p >
+                    Lieferbedingungen:
+                    <span t-field="o.x_carrier_id"/>
+                </p>
+
+                <p t-field="o.notes"/>
+
+                <p >
+                    Lieferadresse:
+
+                    <span t-field="o.x_partner_shipping_id"
+
+                          t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
+                </p>
+                <div class="oe_structure"/>
+            </div>
+
+        </xpath>
+    </template>
+
+
+    <data>
+
+    </data>
+</odoo>

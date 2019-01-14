@@ -1,0 +1,284 @@
+<odoo>
+    <data>
+
+        <template id="az_rechnung_account_template">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <t t-set="o" t-value="o.with_context({'lang':o.partner_id.lang})" />
+                        <div class="page">
+
+                            <div class="oe_structure"/>
+
+                            <h3 class="text-right" style="margin-right: 15px;">
+                                3. AZ-Rechnung
+                            </h3>
+
+                            <p lass="text-left">
+                                <span t-field="o.company_id.name"/>
+                                <span t-field="o.company_id.street"/>
+                                <span t-field="o.company_id.street2"/>
+                            </p>
+
+                            <div class="row">
+                                <div class="col-xs-7">
+                                    <strong>
+                                        Firma:
+                                        <address t-field="o.partner_id"
+                                                 t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                                    </strong>
+                                </div>
+                                <div class="col-xs-5">
+                                    <div class="text-right" style="background-color: red;">
+                                        <b>Projekt:
+                                            <span t-field="o.name"/>
+                                        </b>
+                                    </div>
+
+                                    <div class="text-right">
+                                        Belegnummer:
+                                        <span t-field="o.number"/>
+                                    </div>
+
+                                    <div class="text-right">
+                                        Datum:
+                                        <span t-field="o.date_invoice" t-options='{"widget": "date"}'/>
+                                    </div>
+
+                                    <div class="text-right">
+                                        <br/>
+                                    </div>
+
+                                    <div class="text-right">
+                                        Ansprechpartner:
+                                        <span t-field="o.user_id"/>
+                                    </div>
+                                    <div class="text-right">
+                                        Telefon:
+                                        <span t-field="o.user_id.phone"/>
+                                    </div>
+                                    <div class="text-right">
+                                        Email:
+                                        <span t-field="o.user_id.login"/>
+                                    </div>
+                                    <div class="text-right">
+                                        Seite:
+                                        <span class="page"/>
+                                        /
+                                        <span class="topage"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Is there a discount on at least one line? -->
+                            <t t-set="display_discount" t-value="any([l.discount for l in o.invoice_line_ids])"/>
+
+                            <table class="table table-condensed" name="invoice_line_table">
+                                <thead>
+                                    <tr>
+                                        <th>Position</th>
+                                        <th>Bezeichnung</th>
+                                        <th class="text-right">Menge Einheit</th>
+
+                                        <th class="text-right">Einzelpreis
+                                        </th>
+
+                                        <th class="text-right">Nettosumme
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="invoice_tbody">
+                                    <tr t-foreach="o.invoice_line_ids" t-as="l">
+                                        <td>
+                                            <span t-esc="l_index+1"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="l.name"/>
+                                        </td>
+
+                                        <td class="text-right">
+                                            <span t-field="l.quantity"/>
+                                            <span t-field="l.uom_id"/>
+                                        </td>
+
+                                        <td class="text-right">
+                                            <span t-field="l.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+
+                                        <td class="text-right" id="subtotal">
+
+                                            <span t-field="l.price_subtotal_net2"
+                                                  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+
+                            <div class="row">
+                                <div class="col-xs-6">
+
+                                </div>
+
+                                <div class="col-xs-2">
+                                    <strong>
+                                        Nettobetrag
+                                    </strong>
+                                </div>
+
+                                <div class="col-xs-2">
+                                    <strong>
+                                        Mwst
+                                    </strong>
+                                </div>
+
+                                <div class="col-xs-2">
+                                    <strong>
+                                        Bruttobetrag
+                                    </strong>
+                                </div>
+                            </div>
+
+                            <div class="row" style="border: 1px solid black;">
+                                <div class="col-xs-6">
+                                </div>
+
+                                <div class="col-xs-2">
+                                    <span t-field="o.amount_untaxed"
+                                          t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </div>
+
+                                <div class="col-xs-2">
+                                    <span t-field="o.amount_tax"
+                                          t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </div>
+
+                                <div class="col-xs-2">
+                                    <span t-field="o.amount_total"
+                                          t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </div>
+                            </div>
+
+                            <tr t-foreach="o.tax_line_ids" t-as="t">
+                                <div class="row">
+                                    <div class="col-xs-8">
+                                      <span t-field="t.tax_id.name"/>
+                                    </div>
+
+                                    <div class="col-xs-2">
+                                        <span t-field="t.amount"
+                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </div>
+
+                                    <div class="col-xs-4">
+
+                                    </div>
+
+                                </div>
+                            </tr>
+
+                            <div class="clearfix"  style="display:none;">
+                                <div id="total" class="row"  style="display:none;">
+                                    <div class="col-xs-4 pull-right">
+                                        <table class="table table-condensed" style="min-width: 250px;max-width: 400px;">
+                                            <tr class="border-black" style="border-bottom:1px solid #dddddd;">
+                                                <td>
+
+                                                </td>
+                                                <td class="text-right">
+                                                    <span t-field="o.amount_untaxed"
+                                                          t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                                </td>
+                                            </tr>
+                                            <t t-foreach="o._get_tax_amount_by_group()" t-as="amount_by_group">
+                                                <tr style="border-bottom:1px solid #dddddd;">
+                                                    <t t-if="len(o.tax_line_ids) == 1 and o.amount_untaxed == amount_by_group[2]">
+                                                        <td>
+                                                            <span t-esc="amount_by_group[0]"/>
+                                                            <span>&amp;nbsp;
+                                                                <span>on</span>
+                                                                <t t-esc="amount_by_group[4]"/>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <span t-esc="amount_by_group[3]"/>
+                                                        </td>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <td>
+                                                            <span t-esc="amount_by_group[0]"/>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <span t-esc="amount_by_group[3]"/>
+                                                        </td>
+                                                    </t>
+                                                </tr>
+                                            </t>
+                                            <tr class="border-black">
+                                                <td>
+                                                    <strong>Total</strong>
+                                                </td>
+                                                <td class="text-right">
+                                                    <span t-field="o.amount_total"
+                                                          t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p >
+                                Zahlungsbedingungen:
+                                <span t-field="o.payment_term_id"/>
+                            </p>
+
+                            <p t-if="o.comment">
+                                <span t-field="o.comment"/>
+                            </p>
+                            <br/>
+
+
+                            <div class="row" >
+                                <div class="col-xs-4" style="border-bottom: 2px solid black;">
+                                    <p >
+                                        Mit freundlichen Grüßen
+                                    </p>
+                                    <p >
+                                        <span t-field="o.company_id.name"/>
+                                    </p>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                </div>
+
+                                <div class="col-xs-8">
+
+                                </div>
+                            </div>
+
+                            <br/>
+
+
+                        </div>
+
+                    </t>
+
+                </t>
+            </t>
+        </template>
+
+
+        <report
+                id="az_rechnung_account_report9"
+                model="account.invoice"
+                string="AZ-Rechnung"
+                report_type="qweb-pdf"
+                name="custom_hsl.az_rechnung_account_template"
+                file="custom_hsl.az_rechnung_account_template"
+
+        />
+
+    </data>
+</odoo>
