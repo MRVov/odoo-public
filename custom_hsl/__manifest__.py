@@ -15,7 +15,7 @@
 
 
     'category': 'Print Form',
-    'version': '0.6',
+    'version': '0.7',
 
     # any module necessary for this one to work correctly
     'depends': ['base', 'sale', 'sale_order_dates', 'delivery', 'web', 'sale_timesheet', 'purchase_requisition', 'purchase', 'account'],
